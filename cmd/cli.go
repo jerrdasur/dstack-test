@@ -135,7 +135,7 @@ func main() {
 
 			containerCreateInfo, err := dockerClient.ContainerCreate(ctx.Context, &container.Config{
 				Image:       ctx.String(argDockerImage),
-				Shell:       []string{ctx.String(argBashCommand)},
+				Cmd:         []string{"/bin/bash", "-c", fmt.Sprintf("$(%s)", ctx.String(argBashCommand))},
 				ArgsEscaped: true,
 			}, &container.HostConfig{}, nil, nil, "")
 			if err != nil {
@@ -171,7 +171,6 @@ func main() {
 				dat := make([]byte, count)
 				_, err = logsReader.Read(dat)
 
-				fmt.Println(string(dat))
 				resp, err := logsClient.PutLogEvents(ctx.Context, &cloudwatchlogs.PutLogEventsInput{
 					LogEvents: []types.InputLogEvent{
 						{
